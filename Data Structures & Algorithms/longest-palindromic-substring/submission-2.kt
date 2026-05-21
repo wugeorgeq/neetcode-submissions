@@ -1,0 +1,72 @@
+class Solution {
+    /**
+    expand from centers to check for longest palindromic substring
+    but also we have even length substrings that we need to expand out
+
+    0 1 2 3 4 5 6
+    c d e e d b a
+    b c f a f d e
+    */
+    fun longestPalindrome(s: String): String {
+        var longestX = 0
+        var longestY = 0
+        for (i in 0 until s.length) {
+            val (x, y) = expand(s, i, i)
+            if (y - x > longestY - longestX) {
+                longestX = x
+                longestY = y
+            }
+            val (i, j) = expand(s, i, i+1)
+            if (j - i > longestY - longestX) {
+                longestX = i
+                longestY = j
+            }
+        }
+        return s.substring(longestX, longestY + 1)
+    }
+
+    // expand to palindrome, return indices of first and last in palindrome
+    fun expand(s: String, i: Int, j: Int): Pair<Int, Int> {
+        var x = i
+        var y = j
+        if (y >= s.length) return Pair(x, x)
+        while (x >= 0 && y < s.length) {
+            if (s[x] != s[y]) break
+            x--
+            y++
+        }
+        return Pair(x + 1, y - 1)
+    }
+
+    fun findWithCenter(s: String, center: Int): String {
+        if (center == s.length - 1) return s[s.length - 1].toString()
+
+        var i = center
+        var j = center
+        while (i >= 0 && j < s.length) {
+            if (s[i] != s[j]) break
+            i--
+            j++
+        }
+        val pI = i + 1
+        val pJ = j - 1
+        val lenIJ = pJ - pI + 1
+
+        var x = center
+        var y = center + 1
+        while (x >= 0 && y < s.length) {
+            if (s[x] != s[y]) break
+            x--
+            y++
+        }
+        val pX = x + 1
+        val pY = y - 1
+        val lenXY = pY - pX + 1
+
+        return if (lenIJ > lenXY) {
+            s.substring(pI, pJ + 1)
+        } else {
+            s.substring(pX, pY + 1)
+        }
+    }
+}
